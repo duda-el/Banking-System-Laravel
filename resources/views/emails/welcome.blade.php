@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome to Fantasy Football</title>
+    <title>Welcome to Our Bank</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #ffffff; /* White background for Georgian theme */
+            background-color: #f9f9f9; /* Light grey background */
             margin: 0;
             padding: 0;
             color: #333;
@@ -14,7 +14,7 @@
             max-width: 600px;
             margin: 20px auto;
             background: #ffffff;
-            border: 1px solid #d10000; /* Georgian red for borders */
+            border: 1px solid #007bff; /* Bank blue for borders */
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -23,7 +23,7 @@
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            color: #d10000; /* Georgian red for header */
+            color: #007bff; /* Bank blue for header */
         }
         .email-body {
             font-size: 16px;
@@ -36,47 +36,65 @@
         .email-footer {
             margin-top: 30px;
             font-size: 14px;
-            color: #d10000; /* Georgian red for footer */
+            color: #007bff; /* Bank blue for footer */
             text-align: center;
         }
         .email-footer p {
             margin: 5px 0;
         }
         .highlight {
-            color: #d10000; /* Georgian red for highlights */
+            color: #007bff; /* Bank blue for highlights */
             font-weight: bold;
         }
-        .team-logo {
+        .bank-logo {
             display: block;
             margin: 0 auto;
-            width: 100px;
+            width: 120px;
             height: auto;
+        }
+        .cta-button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .cta-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="email-container">
-        <img src="https://upload.wikimedia.org/wikipedia/en/9/9c/Georgia_national_football_team_crest.svg" alt="Georgia National Team Crest" class="team-logo">
+        <h1>Get Loan With Us For 60% And Loose Everything</h1>
         <div class="email-header">
             Welcome, {{ $user->name }}!
         </div>
         <div class="email-body">
             <p>
-                Thank you for registering at <span class="highlight">Fantasy Football</span>. We're excited to have you onboard!
+                Thank you for choosing <span class="highlight">DudasBank</span>. We’re thrilled to have you on board!
             </p>
             <p>
-                Start building your fantasy team and compete with others to win exciting prizes!
+                Your account has been successfully created, and you can now enjoy secure and seamless banking services.
             </p>
             <p>
-                If you have any questions, feel free to contact us.
+                Start managing your finances by logging into your account:
+            </p>
+            <a href="https://example.com/login" class="cta-button">Login to Your Account</a>
+            <p>
+                If you have any questions or need assistance, our support team is here to help.
             </p>
             <p class="highlight">
-                Good luck!
+                We look forward to serving you!
             </p>
         </div>
         <div class="email-footer">
-            <p>Regards,</p>
-            <p>Fantasy Football Team</p>
+            <p>Best Regards,</p>
+            <p>Your Trusted Bank Team</p>
         </div>
     </div>
 </body>

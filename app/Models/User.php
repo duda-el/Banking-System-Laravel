@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasFactory;
     /**
      * The attributes that are mass assignable.
      *
@@ -35,4 +36,14 @@ class User extends Authenticatable
    public function isAdmin(){
     return $this->role === 'admin';
    }
+
+   public function accounts()
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 }
