@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
+            $table->string('type'); // Required for the notification class
             $table->morphs('notifiable'); // Polymorphic relation (e.g., User or Account)
             $table->json('data'); // Store notification data as JSON
             $table->timestamp('read_at')->nullable(); // Marks when the notification was read

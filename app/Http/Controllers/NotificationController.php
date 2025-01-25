@@ -9,7 +9,13 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        return response()->json($request->user()->notifications);
+        $notifications = $request->user()->notifications;
+
+        if ($notifications->isEmpty()) {
+        return response()->json(['message' => 'No notifications found.'], 404);
+        }
+
+        return response()->json($notifications);
     }
 
     public function markAsRead(Request $request, $id)

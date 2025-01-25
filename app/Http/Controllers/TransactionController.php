@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Notifications\TransactionNotification;
 use Illuminate\Http\Request;
+
+
 
 class TransactionController extends Controller
 {
@@ -17,50 +20,66 @@ class TransactionController extends Controller
 
     public function deposit(Request $request)
     {
-        $request->validate([
-            'account_id' => 'required|exists:accounts,id',
-            'amount' => 'required|numeric|min:1',
-        ]);
+    $request->validate([
+        'account_id' => 'required|exists:accounts,id',
+        'amount' => 'required|numeric|min:1',
+    ]);
 
-        $account = Account::findOrFail($request->account_id);
-        $account->balance += $request->amount;
-        $account->save();
+    // Ensure the authenticated user owns the account
+    $account = Account::where('id', $request->account_id)
+        ->where('user_id', $request->user()->id)
+        ->first();
 
-        // Create a transaction
-        $transaction = $account->transactions()->create([
-            'type' => 'deposit',
-            'amount' => $request->amount,
-            'description' => 'Deposit made',
-        ]);
-
-        return response()->json($transaction, 201);
+    if (!$account) {
+        return response()->json(['message' => 'Unauthorized access to this account'], 403);
     }
+
+    // Perform the deposit
+    $account->balance += $request->amount;
+    $account->save();
+
+    // Log the transaction
+    $transaction = $account->transactions()->create([
+        'type' => 'deposit',
+        'amount' => $request->amount,
+        'description' => 'Deposit made',
+    ]);
+
+    return response()->json($transaction, 201);
+    }
+
 
     public function withdraw(Request $request)
     {
-        $request->validate([
-            'account_id' => 'required|exists:accounts,id',
-            'amount' => 'required|numeric|min:1',
-        ]);
+    $request->validate([
+        'account_id' => 'required|exists:accounts,id',
+        'amount' => 'required|numeric|min:1',
+    ]);
 
-        $account = Account::findOrFail($request->account_id);
+    $account = Account::where('id', $request->account_id)
+        ->where('user_id', $request->user()->id)
+        ->first();
 
-        if ($account->balance < $request->amount) {
-            return response()->json(['message' => 'Insufficient balance'], 400);
-        }
-
-        $account->balance -= $request->amount;
-        $account->save();
-
-        // Create a transaction
-        $transaction = $account->transactions()->create([
-            'type' => 'withdrawal',
-            'amount' => $request->amount,
-            'description' => 'Withdrawal made',
-        ]);
-
-        return response()->json($transaction, 201);
+    if (!$account) {
+        return response()->json(['message' => 'Unauthorized access to this account'], 403);
     }
+
+    if ($account->balance < $request->amount) {
+        return response()->json(['message' => 'Insufficient balance'], 400);
+    }
+
+    $account->balance -= $request->amount;
+    $account->save();
+
+    $transaction = $account->transactions()->create([
+        'type' => 'withdrawal',
+        'amount' => $request->amount,
+        'description' => 'Withdrawal made',
+    ]);
+
+    return response()->json($transaction, 201);
+    }
+
 
     public function transfer(Request $request)
     {
@@ -72,7 +91,7 @@ class TransactionController extends Controller
 
 
     $fromAccount = Account::where('id', $request->from_account_id)
-        ->where('user_id', $request->user()->id) // Check ownership
+        ->where('user_id', $request->user()->id) 
         ->first();
 
     if (!$fromAccount) {
@@ -105,6 +124,13 @@ class TransactionController extends Controller
         'amount' => $request->amount,
         'description' => 'Transfer from account ' . $fromAccount->account_number,
     ]);
+
+    // Notify the sender
+    $fromAccount->user->notify(new TransactionNotification('You sent $' . $request->amount . ' to account ' . $toAccount->account_number));
+
+    // Notify the recipient
+    $toAccount->user->notify(new TransactionNotification('You received $' . $request->amount . ' from account ' . $fromAccount->account_number));
+
 
     return response()->json(['message' => 'Transfer successful'], 201);
     }
